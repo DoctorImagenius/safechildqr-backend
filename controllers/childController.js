@@ -58,7 +58,7 @@ const updateChildData = async (req, res, next) => {
         const child = await Child.findById(req.params.id);
         if (!child) {
             const err = new Error("Child not found");
-            err.statusCode = 400;
+            err.statusCode = 404;
             throw err;
         }
 
@@ -90,7 +90,7 @@ const deleteChildData = async (req, res, next) => {
         const child = await Child.findById(req.params.id);
         if (!child) {
             const err = new Error("Child not found");
-            err.statusCode = 400;
+            err.statusCode = 404;
             throw err;
         }
 

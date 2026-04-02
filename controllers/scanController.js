@@ -26,7 +26,7 @@ const scan = async (req, res, next) => {
             deviceInfo: req.headers["user-agent"],
         });
 
-        mailQueue.add("sendEmail", {
+        await mailQueue.add("sendEmail", {
             email: child.parent.email,
             childName: child.name,
             ip: req.ip,
