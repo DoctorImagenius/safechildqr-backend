@@ -1,3 +1,5 @@
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const mailQueue = require("../queues/mailQueue");
 const { generateEmailHTML } = require("../utils/helpers");
 const { getLocation } = require("../utils/helpers");

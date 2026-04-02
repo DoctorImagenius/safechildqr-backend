@@ -30,8 +30,8 @@ const scan = async (req, res, next) => {
             email: child.parent.email,
             childName: child.name,
             ip: req.ip,
-            // deviceInfo: req.headers["user-agent"]
-            deviceInfo: "Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Mobile Safari/537.36"  // for test
+            deviceInfo: req.headers["user-agent"]
+            // deviceInfo: "Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Mobile Safari/537.36"  // for test
         }, {
             attempts: 3,
             backoff: 5000

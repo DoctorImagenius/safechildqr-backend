@@ -42,7 +42,7 @@ const login = async (req, res, next) => {
         const parent = await Parent.findOne({ email });
         if (!parent) {
             const err = new Error("Invalid credentials");
-            err.statusCode = 400; // Bad Request
+            err.statusCode = 400;
             throw err;
         }
 
@@ -50,7 +50,7 @@ const login = async (req, res, next) => {
         const match = await bcrypt.compare(password, parent.password);
         if (!match) {
             const err = new Error("Invalid credentials");
-            err.statusCode = 400; // Bad Request
+            err.statusCode = 400; 
             throw err;
         }
 

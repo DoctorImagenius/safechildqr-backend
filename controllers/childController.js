@@ -100,8 +100,7 @@ const deleteChildData = async (req, res, next) => {
             throw err;
         }
 
-        await Child.findByIdAndDelete(req.params.id);  // we will use transaction
-
+        await Child.findByIdAndDelete(req.params.id);  // we will use transaction in future
         await Parent.findByIdAndUpdate(req.user._id, {
             $pull: { children: child._id }
         });
