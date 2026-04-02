@@ -10,7 +10,7 @@ const sanitizeParent = (parent) => {
 
 async function getLocation(ip) {
     try {
-        ip = "139.135.39.51"; // for test
+        // ip = "139.135.39.51"; // for test
         const res = await axios.get(`https://ipapi.co/${ip}/json/`);
         const { city, region, country_name, latitude, longitude, org } = res.data;
         return { city, region, country_name, latitude, longitude, org };
