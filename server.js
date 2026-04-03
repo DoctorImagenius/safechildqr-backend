@@ -21,8 +21,7 @@ app.use("/parent", parentRoutes);
 app.use("/child", childRoutes);
 app.use("/scan", scanRoutes)
 
-// -------------------- ERROR HANDLER --------------------
 app.use(errorMiddleware);
 
 // -------------------- SERVER --------------------
-app.listen(process.env.PORT || 5000, () => console.log(`Server running on port ${process.env.PORT || 5000}`));
+app.listen(process.env.PORT || 5000, () => console.log(`Server running on port ${process.env.PORT || 5000}, make sure to start the jobs/mailWorker.js file`));
