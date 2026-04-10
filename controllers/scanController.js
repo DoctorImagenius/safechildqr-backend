@@ -1,52 +1,49 @@
 const Child = require("../models/Child");
 const ScanLog = require("../models/ScanLog");
-const mailQueue = require("../queues/mailQueue");
 const { handleValidation } = require("../utils/validators");
+const { transporter, generateEmailHTML, getLocation } = require("../utils/helpers");
 
 
-const queueScanSideEffects = async (child, req) => {
+const sendEmail = async (child, req) => {
     try {
-        await Promise.race([
-            mailQueue.add("sendEmail", {
-                email: child.parent.email,
-                childName: child.name,
-                ip: req.ip,
-                deviceInfo: req.headers["user-agent"]
-            }, {
-                attempts: 3,
-                backoff: 5000
-            }),
-            new Promise((_, reject) => {
-                setTimeout(() => reject(new Error("Mail queue timed out")), 2000);
-            })
-        ]);
+        const time = new Date().toUTCString();
+        const location = await getLocation(req.ip);
+
+        const html = generateEmailHTML({
+            childName: child.name,
+            ip: req.ip,
+            time,
+            location : location || "Unknown",
+            deviceInfo: req.headers["user-agent"] || "Unknown"
+        });
+
+        await transporter.sendMail({
+            from: `"SafeChildQR 🚨" <${process.env.EMAIL_USER}>`,
+            to: child.parent.email,
+            subject: "🚨 SafeChildQR Alert",
+            html,
+        });
+
+        console.log("Email sent to:", child.parent.email);
     } catch (err) {
-        console.error("Failed to queue scan email:", err.message);
+        console.error("Email error:", err.message);
     }
 };
-
 
 const scan = async (req, res, next) => {
     try {
         handleValidation(req);
 
         const { code } = req.params;
-
         const childId = code.split("+")[0];
 
         const child = await Child.findById(childId).populate("parent");
+
         if (!child) {
             const err = new Error("Child not found");
             err.statusCode = 404;
             throw err;
         }
-
-        await ScanLog.create({
-            child: child._id,
-            parent: child.parent._id,
-            ipAddress: req.ip,
-            deviceInfo: req.headers["user-agent"],
-        });
 
         res.json({
             child: {
@@ -59,7 +56,18 @@ const scan = async (req, res, next) => {
                 emergencyNumber: child.parent.emergencyNumber
             }
         });
-        queueScanSideEffects(child, req);
+
+        ScanLog.create({
+            child: child._id,
+            parent: child.parent._id,
+            ipAddress: req.ip,
+            deviceInfo: req.headers["user-agent"] || "Unknown",
+        }).catch(err =>
+            console.error("ScanLog error:", err.message)
+        );
+
+        sendEmail(child, req);
+
     } catch (err) {
         next(err);
     }

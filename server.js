@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const authRoutes = require("./routes/auth");
@@ -24,4 +23,4 @@ app.use("/scan", scanRoutes)
 app.use(errorMiddleware);
 
 // -------------------- SERVER --------------------
-app.listen(process.env.PORT || 5000, () => console.log(`Server running on port ${process.env.PORT || 5000}, make sure to start the jobs/mailWorker.js file`));
+app.listen(process.env.PORT || 5000, () => console.log(`Server running on port ${process.env.PORT || 5000}`));
