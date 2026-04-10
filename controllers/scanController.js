@@ -17,12 +17,12 @@ const sendEmail = async (child, req) => {
             deviceInfo: req.headers["user-agent"] || "Unknown"
         });
 
-        // await transporter.sendMail({
-        //     from: `"SafeChildQR 🚨" <${process.env.EMAIL_USER}>`,
-        //     to: child.parent.email,
-        //     subject: "🚨 SafeChildQR Alert",
-        //     html,
-        // });
+        await transporter.sendMail({
+            from: `"SafeChildQR 🚨" <${process.env.EMAIL_USER}>`,
+            to: child.parent.email,
+            subject: "🚨 SafeChildQR Alert",
+            html,
+        });
 
         console.log("Email sent to:", child.parent.email);
     } catch (err) {

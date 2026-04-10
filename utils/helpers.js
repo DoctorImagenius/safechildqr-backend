@@ -8,23 +8,9 @@ const sanitizeParent = (parent) => {
     return obj;
 };
 
-// const getRealIP = (req) => {
-//     const forwarded = req.headers["x-forwarded-for"];
-
-//     let ip = forwarded
-//         ? forwarded.split(",")[0]
-//         : req.ip;
-//     ip = ip.split(":").pop();
-
-//     return ip;
-// };
-
 async function getLocation(ip) {
     try {
-        // ip = getRealIP(ip);
-        console.log("IP addredd with port:", ip);
         ip = ip.split(":")[0];
-        console.log("Processed IP:", ip);
         const res = await axios.get(`https://ipapi.co/${ip}/json/`);
         const { city, region, country_name, latitude, longitude, org } = res.data;
         console.log("IP Location data:", res.data || city, region, country_name, latitude, longitude, org);
