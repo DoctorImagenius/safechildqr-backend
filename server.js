@@ -6,6 +6,7 @@ const authRoutes = require("./routes/auth");
 const parentRoutes = require("./routes/parent");
 const childRoutes = require("./routes/child");
 const scanRoutes = require("./routes/scan");
+const statsRoutes = require("./routes/stats");
 const connectDB = require("./config/db");
 
 
@@ -20,6 +21,7 @@ app.use("/auth", authRoutes);
 app.use("/parent", parentRoutes);
 app.use("/child", childRoutes);
 app.use("/scan", scanRoutes)
+app.use("/stats", statsRoutes);
 
 app.use(errorMiddleware);
 
