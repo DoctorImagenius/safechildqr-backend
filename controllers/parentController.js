@@ -1,5 +1,6 @@
 const Parent = require("../models/Parent");
 const Child = require("../models/Child");
+const ScanLog = require("../models/ScanLog");
 const bcrypt = require("bcryptjs");
 const { handleValidation } = require("../utils/validators");
 const { sanitizeParent } = require("../utils/helpers");
@@ -39,7 +40,7 @@ const updateParentData = async (req, res, next) => {
 
 const deleteParentData = async (req, res, next) => {
     try {
-        await Child.deleteMany({ parent: req.user._id });  // we will use transaction in future
+        await Child.deleteMany({ parent: req.user._id });
         await Parent.findByIdAndDelete(req.user._id);
         res.json({ message: "Deleted successfully" });
     } catch (err) {
@@ -47,9 +48,41 @@ const deleteParentData = async (req, res, next) => {
     }
 }
 
+const getParentScanLogs = async (req, res, next) => {
+    try {
+        const logs = await ScanLog.find({ parent: req.user._id })
+            .populate("child", "name age")
+            .sort({ createdAt: -1 })
+            .limit(100);
+
+        const stats = {
+            total: logs.length,
+            last7Days: logs.filter(log => {
+                const daysDiff = (Date.now() - new Date(log.createdAt)) / (1000 * 60 * 60 * 24);
+                return daysDiff <= 7;
+            }).length,
+            last30Days: logs.filter(log => {
+                const daysDiff = (Date.now() - new Date(log.createdAt)) / (1000 * 60 * 60 * 24);
+                return daysDiff <= 30;
+            }).length,
+            uniqueDevices: new Set(logs.map(log => log.deviceInfo)).size,
+            uniqueIPs: new Set(logs.map(log => log.ipAddress)).size,
+        };
+
+        res.json({
+            success: true,
+            data: logs,
+            stats
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 
 module.exports = {
     getParentData,
     updateParentData,
-    deleteParentData
+    deleteParentData,
+    getParentScanLogs
 }
